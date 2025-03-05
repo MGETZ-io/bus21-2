@@ -3,70 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handy-Seite - Route</title>
+    <title>Bus Routen - Handy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        .routeItem {
+            background-color: #f1f1f1;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .highlight {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
     <h1>Aktuelle Route</h1>
-    <div id="routeInfo">
-        <p id="routeName"></p>
-        <p id="currentStop"></p>
+    <div id="routeDetails">
+        <h2>Keine Route gewählt</h2>
     </div>
+    
     <button id="nextStopButton">Nächster Halt</button>
-    <button id="announcementButton">Ansage</button>
+    <button id="announceButton">Ansage</button>
 
     <script>
-        const apiUrl = 'https://api.github.com/repos/your-username/your-repo/contents/routes.json';
-        const token = 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN';
+        const repoName = 'bus21-1'; // PC Repo Name
+        const token = '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'; // Dein GitHub PAT
+        const user = 'MGETZ-io'; // Dein GitHub Username
 
-        // Aktuelle Route und Haltestelle anzeigen
-        function loadRoute() {
+        const apiUrl = `https://api.github.com/repos/${user}/${repoName}/contents/routes.json`;
+
+        let currentRoute = null;
+        let currentStopIndex = 0;
+
+        document.getElementById('nextStopButton').addEventListener('click', function () {
+            if (currentRoute && currentStopIndex < currentRoute.stops.length) {
+                currentStopIndex++;
+                loadRouteDetails();
+            }
+        });
+
+        document.getElementById('announceButton').addEventListener('click', function () {
+            if (currentRoute) {
+                const currentStop = currentRoute.stops[currentStopIndex];
+                const audio = new Audio(`${currentStop}.mp3`); // Announce Soundfile
+                audio.play();
+            }
+        });
+
+        function loadRouteDetails() {
             fetch(apiUrl, {
+                method: 'GET',
                 headers: {
-                    'Authorization': `token ${token}`
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3.raw'
                 }
             })
             .then(response => response.json())
             .then(data => {
-                const routes = JSON.parse(atob(data.content));
-                const currentRoute = routes[0];  // Beispiel: erste Route auswählen
-                document.getElementById('routeName').textContent = `${currentRoute.number} - ${currentRoute.name}`;
-                document.getElementById('currentStop').textContent = `Aktueller Halt: ${currentRoute.stops[0]}`;
+                const routes = data.content ? JSON.parse(atob(data.content)) : [];
+                currentRoute = routes[0]; // Nimm die erste Route
+
+                const routeDetails = document.getElementById('routeDetails');
+                routeDetails.innerHTML = `
+                    <h2>Linie ${currentRoute.number} - ${currentRoute.name}</h2>
+                    <p>Aktueller Halt: <span class="highlight">${currentRoute.stops[currentStopIndex]}</span></p>
+                    <p>Fahrplan: ${currentRoute.stops.join(', ')}</p>
+                `;
             })
-            .catch(error => {
-                console.error('Fehler:', error);
-            });
+            .catch(error => console.error('Fehler beim Laden der Route:', error));
         }
 
-        // Nächster Halt Button
-        document.getElementById('nextStopButton').addEventListener('click', function() {
-            fetch(apiUrl, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: 'Nächster Halt',
-                    content: btoa(JSON.stringify({ nextStop: 'Nächster Halt Beispiel' }))
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Nächster Halt gesetzt:', data);
-                loadRoute(); // Aktualisiere die Route
-            })
-            .catch(error => {
-                console.error('Fehler:', error);
-            });
-        });
-
-        // Ansage Button
-        document.getElementById('announcementButton').addEventListener('click', function() {
-            const audio = new Audio('announcement.mp3');  // Ersetze mit deiner Sound-Datei
-            audio.play();
-        });
-
-        loadRoute();
+        // Route laden, wenn eine ausgewählt wurde (hier als Beispiel)
+        loadRouteDetails();
     </script>
 </body>
 </html>
