@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Simulator 21 - Ansage</title>
+</head>
+<body>
+    <h1>Bus Simulator 21 - Ansage</h1>
+
+    <h2>Aktuelle Haltestelle: <span id="currentStop"></span></h2>
+
+    <button onclick="playAnnouncement()">Nächster Halt ankündigen</button>
+    <button onclick="goToNextStop()">Zur nächsten Haltestelle</button>
+
+    <script>
+        // Aktuelle Haltestelle aus der URL abrufen
+        const currentStopText = new URLSearchParams(window.location.search).get('currentStop');
+
+        // Haltestelle anzeigen
+        document.getElementById('currentStop').textContent = currentStopText;
+
+        // Ansage abspielen (hier als Text, später kann es auch mit einer Audio-Datei kombiniert werden)
+        function playAnnouncement() {
+            alert('Nächster Halt: ' + currentStopText);
+        }
+
+        // Funktion zur nächsten Haltestelle
+        function goToNextStop() {
+            // Hier könnte der Übergang zur nächsten Haltestelle geschehen, indem du die URL änderst
+            // Um die nächste Haltestelle zu erreichen, müsstest du eine API oder JavaScript-Logik verwenden, um zur nächsten Haltestelle zu springen.
+            window.location.href = 'bus21-1.html'; // Zurück zur bus21-1 Seite
+        }
+    </script>
+</body>
+</html>
