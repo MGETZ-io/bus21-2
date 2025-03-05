@@ -4,33 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bus Simulator 21 - Ansage</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #2C2C2C;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #1E1E1E;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            color: #FFCC00;
+            font-size: 2rem;
+        }
+        .btn-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+        button {
+            background-color: #FFCC00;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #E6B800;
+        }
+        #currentStop {
+            font-size: 1.3rem;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Bus Simulator 21 - Ansage</h1>
 
-    <h2>Aktuelle Haltestelle: <span id="currentStop"></span></h2>
+    <header>
+        <h1>Ansage für den nächsten Halt</h1>
+    </header>
 
-    <button onclick="playAnnouncement()">Nächster Halt ankündigen</button>
-    <button onclick="goToNextStop()">Zur nächsten Haltestelle</button>
+    <div class="btn-container">
+        <button id="announceBtn">Nächster Halt ankündigen</button>
+        <div id="currentStop">Aktueller Halt: Noch keine Ansage ausgewählt</div>
+    </div>
 
     <script>
-        // Aktuelle Haltestelle aus der URL abrufen
-        const currentStopText = new URLSearchParams(window.location.search).get('currentStop');
+        const announceBtn = document.getElementById('announceBtn');
+        const currentStopDisplay = document.getElementById('currentStop');
+        
+        let stops = ['Hauptbahnhof', 'Zentrum', 'Universität']; // Beispiel Haltestellen
+        let currentStopIndex = 0;
 
-        // Haltestelle anzeigen
-        document.getElementById('currentStop').textContent = currentStopText;
-
-        // Ansage abspielen (hier als Text, später kann es auch mit einer Audio-Datei kombiniert werden)
-        function playAnnouncement() {
-            alert('Nächster Halt: ' + currentStopText);
+        // Funktion zum Abspielen der Ansage
+        function playAnnouncement(stop) {
+            const audio = new Audio(`sounds/${stop.toLowerCase().replace(/\s/g, '_')}.mp3`);
+            audio.play();
         }
 
-        // Funktion zur nächsten Haltestelle
-        function goToNextStop() {
-            // Hier könnte der Übergang zur nächsten Haltestelle geschehen, indem du die URL änderst
-            // Um die nächste Haltestelle zu erreichen, müsstest du eine API oder JavaScript-Logik verwenden, um zur nächsten Haltestelle zu springen.
-            window.location.href = 'bus21-1.html'; // Zurück zur bus21-1 Seite
+        // Aktualisiere den Text für den aktuellen Halt
+        function updateCurrentStop() {
+            currentStopDisplay.textContent = `Aktueller Halt: ${stops[currentStopIndex]}`;
         }
+
+        // Announce next stop
+        announceBtn.addEventListener('click', function() {
+            if (currentStopIndex < stops.length - 1) {
+                currentStopIndex++;
+                updateCurrentStop();
+                playAnnouncement(stops[currentStopIndex]);
+            }
+        });
     </script>
+
 </body>
 </html>
