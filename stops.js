@@ -1,7 +1,7 @@
 async function fetchCurrentStop() {
-    const response = await fetch('https://api.github.com/repos/DEIN_USERNAME/DEIN_REPOSITORY/contents/stops.json', {
+    const response = await fetch('https://api.github.com/repos/MGETZ-io/bus21-1/contents/stops.json', {
         headers: {
-            'Authorization': 'Bearer DEIN_GITHUB_TOKEN'
+            'Authorization': 'Bearer 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'
         }
     });
 
@@ -17,9 +17,9 @@ async function fetchCurrentStop() {
 }
 
 async function updateCurrentStop(newStop) {
-    const response = await fetch('https://api.github.com/repos/DEIN_USERNAME/DEIN_REPOSITORY/contents/stops.json', {
+    const response = await fetch('https://api.github.com/repos/MGETZ-io/bus21-1/contents/stops.json', {
         headers: {
-            'Authorization': 'Bearer DEIN_GITHUB_TOKEN'
+            'Authorization': 'Bearer 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'
         }
     });
 
