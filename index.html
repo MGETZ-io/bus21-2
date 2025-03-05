@@ -3,102 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bus Routen - Handy</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        h1 {
-            color: #4CAF50;
-        }
-
-        .routeItem {
-            background-color: #f1f1f1;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-
-        .highlight {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <title>Bus-Routen</title>
 </head>
 <body>
-    <h1>Aktuelle Route</h1>
-    <div id="routeDetails">
-        <h2>Keine Route gewählt</h2>
-    </div>
-    
-    <button id="nextStopButton">Nächster Halt</button>
-    <button id="announceButton">Ansage</button>
+    <h1>Fahrt gestartet</h1>
+    <h2 id="route-name"></h2>
+    <ul id="stops-list">
+        <!-- Dynamisch generierte Haltestellen werden hier angezeigt -->
+    </ul>
+    <button id="next-stop">Nächster Halt</button>
 
     <script>
-        const repoName = 'bus21-1'; // PC Repo Name
-        const token = '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'; // Dein GitHub PAT
-        const user = 'MGETZ-io'; // Dein GitHub Username
-
-        const apiUrl = `https://api.github.com/repos/${user}/${repoName}/contents/routes.json`;
-
-        let currentRoute = null;
-        let currentStopIndex = 0;
-
-        document.getElementById('nextStopButton').addEventListener('click', function () {
-            if (currentRoute && currentStopIndex < currentRoute.stops.length) {
-                currentStopIndex++;
-                loadRouteDetails();
-            }
-        });
-
-        document.getElementById('announceButton').addEventListener('click', function () {
-            if (currentRoute) {
-                const currentStop = currentRoute.stops[currentStopIndex];
-                const audio = new Audio(`${currentStop}.mp3`); // Announce Soundfile
-                audio.play();
-            }
-        });
-
-        function loadRouteDetails() {
-            fetch(apiUrl, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3.raw'
-                }
-            })
+        // Laden der aktuellen Route (von der PC-Seite)
+        fetch('https://api.github.com/repos/MGETZ-io/bus21-2/contents/currentRoute.json')
             .then(response => response.json())
             .then(data => {
-                const routes = data.content ? JSON.parse(atob(data.content)) : [];
-                currentRoute = routes[0]; // Nimm die erste Route
+                const decodedRoute = JSON.parse(atob(data.content)); // Decodiert die Base64-kodierte Route
+                displayRoute(decodedRoute);
+            });
 
-                const routeDetails = document.getElementById('routeDetails');
-                routeDetails.innerHTML = `
-                    <h2>Linie ${currentRoute.number} - ${currentRoute.name}</h2>
-                    <p>Aktueller Halt: <span class="highlight">${currentRoute.stops[currentStopIndex]}</span></p>
-                    <p>Fahrplan: ${currentRoute.stops.join(', ')}</p>
-                `;
-            })
-            .catch(error => console.error('Fehler beim Laden der Route:', error));
+        // Route anzeigen
+        function displayRoute(route) {
+            document.getElementById('route-name').textContent = `Fahrt: ${route.name}`;
+            const stopsList = document.getElementById('stops-list');
+            stopsList.innerHTML = '';
+
+            route.stops.forEach((stop, index) => {
+                const li = document.createElement('li');
+                li.textContent = stop;
+                if (index === 0) {
+                    li.style.fontSize = '1.5em'; // Erster Halt hervorgehoben
+                }
+                stopsList.appendChild(li);
+            });
         }
 
-        // Route laden, wenn eine ausgewählt wurde (hier als Beispiel)
-        loadRouteDetails();
+        // Nächster Halt
+        document.getElementById('next-stop').addEventListener('click', () => {
+            console.log('Nächster Halt');
+            // Hier könntest du den aktuellen Halt in der Route aktualisieren
+        });
     </script>
 </body>
 </html>
