@@ -1,1 +1,10 @@
 
+{
+  "name": "Route 1",
+  "stops": [
+    "Haltestelle 1",
+    "Haltestelle 2",
+    "Haltestelle 3",
+    "Haltestelle 4"
+  ]
+}
