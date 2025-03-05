@@ -3,13 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bus 21 - Nächster Halt</title>
-    <script src="stops.js" defer></script>
-    <link rel="stylesheet" href="style.css">
+    <title>Handy-Seite - Route</title>
 </head>
 <body>
-    <h1>Bus 21 - Nächster Halt</h1>
+    <h1>Aktuelle Route</h1>
+    <div id="routeInfo">
+        <p id="routeName"></p>
+        <p id="currentStop"></p>
+    </div>
     <button id="nextStopButton">Nächster Halt</button>
-    <div id="currentStop">Aktueller Halt wird geladen...</div>
+    <button id="announcementButton">Ansage</button>
+
+    <script>
+        const apiUrl = 'https://api.github.com/repos/your-username/your-repo/contents/routes.json';
+        const token = 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN';
+
+        // Aktuelle Route und Haltestelle anzeigen
+        function loadRoute() {
+            fetch(apiUrl, {
+                headers: {
+                    'Authorization': `token ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const routes = JSON.parse(atob(data.content));
+                const currentRoute = routes[0];  // Beispiel: erste Route auswählen
+                document.getElementById('routeName').textContent = `${currentRoute.number} - ${currentRoute.name}`;
+                document.getElementById('currentStop').textContent = `Aktueller Halt: ${currentRoute.stops[0]}`;
+            })
+            .catch(error => {
+                console.error('Fehler:', error);
+            });
+        }
+
+        // Nächster Halt Button
+        document.getElementById('nextStopButton').addEventListener('click', function() {
+            fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Nächster Halt',
+                    content: btoa(JSON.stringify({ nextStop: 'Nächster Halt Beispiel' }))
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Nächster Halt gesetzt:', data);
+                loadRoute(); // Aktualisiere die Route
+            })
+            .catch(error => {
+                console.error('Fehler:', error);
+            });
+        });
+
+        // Ansage Button
+        document.getElementById('announcementButton').addEventListener('click', function() {
+            const audio = new Audio('announcement.mp3');  // Ersetze mit deiner Sound-Datei
+            audio.play();
+        });
+
+        loadRoute();
+    </script>
 </body>
 </html>
