@@ -4,8 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bus-Routen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        #route-name {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        #stops-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #stops-list li {
+            margin: 10px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #stops-list li.highlight {
+            background-color: #FFEB3B;
+            font-weight: bold;
+        }
+        #next-stop {
+            padding: 10px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #next-stop:hover {
+            background-color: #FF5722;
+        }
+    </style>
 </head>
 <body>
+
     <h1>Fahrt gestartet</h1>
     <h2 id="route-name"></h2>
     <ul id="stops-list">
@@ -14,7 +54,7 @@
     <button id="next-stop">Nächster Halt</button>
 
     <script>
-        // Laden der aktuellen Route (von der PC-Seite)
+        // Lade die aktuelle Route (von der PC-Seite)
         fetch('https://api.github.com/repos/MGETZ-io/bus21-2/contents/currentRoute.json')
             .then(response => response.json())
             .then(data => {
@@ -32,7 +72,7 @@
                 const li = document.createElement('li');
                 li.textContent = stop;
                 if (index === 0) {
-                    li.style.fontSize = '1.5em'; // Erster Halt hervorgehoben
+                    li.classList.add('highlight'); // Erster Halt wird hervorgehoben
                 }
                 stopsList.appendChild(li);
             });
@@ -40,8 +80,14 @@
 
         // Nächster Halt
         document.getElementById('next-stop').addEventListener('click', () => {
-            console.log('Nächster Halt');
-            // Hier könntest du den aktuellen Halt in der Route aktualisieren
+            const stopsList = document.getElementById('stops-list');
+            const currentStop = stopsList.querySelector('.highlight');
+            const nextStop = currentStop ? currentStop.nextElementSibling : null;
+            
+            if (nextStop) {
+                currentStop.classList.remove('highlight');
+                nextStop.classList.add('highlight');
+            }
         });
     </script>
 </body>
